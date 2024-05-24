@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "fileninja"
+version = "2.0"
+description = ""
+authors = ["Neutrino79 <atharvhiremath.ah@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Django = "^5.0.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
