@@ -74,8 +74,12 @@ WSGI_APPLICATION = 'src.FileNinja.wsgi.app'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'src/db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'verceldb',
+        'USER': 'default',
+        'PASSWORD': 'Iq0n8LYgDZrw',
+        'HOST': 'ep-falling-snow-a19cvw7w-pooler.ap-southeast-1.aws.neon.tech',
+        'PORT': '5432',
     }
 }
 
