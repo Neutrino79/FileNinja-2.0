@@ -45,6 +45,12 @@ run80:
 app:
 	poetry run python -m src.manage startapp
 
+collect:
+	poetry run python -m src.manage collectstatic --no-input --clear
+
+runp: collect
+	poetry run gunicorn -b 127.0.0.1:8000 src.FileNinja.wsgi
+
 # ——————————————————————————
 # User Management:-
 # ——————————————————————————
