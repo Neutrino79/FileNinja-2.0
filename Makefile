@@ -48,7 +48,7 @@ app:
 collect:
 	poetry run python -m src.manage collectstatic --no-input --clear
 
-runp: collect
+runp:
 	poetry run gunicorn -b 127.0.0.1:8000 src.FileNinja.wsgi
 
 # ——————————————————————————
