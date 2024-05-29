@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 class ContactDetails(models.Model):
-    class Meta: 
+    class Meta:
         verbose_name_plural = "Inquiry Details"
 
     name = models.CharField(max_length=60)
