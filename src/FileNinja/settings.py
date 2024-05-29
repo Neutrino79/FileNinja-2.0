@@ -13,6 +13,9 @@ import os
 from pathlib import Path
 import os.path
 
+# Impirt Jazzmin settings
+from .jazzmin import JAZZMIN_SETTINGS
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -31,6 +34,9 @@ ALLOWED_HOSTS = ['.vercel.app', 'localhost','127.0.0.1']
 
 # noinspection PyInterpreter
 INSTALLED_APPS = [
+    # Jazzmin Settings
+    'jazzmin',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

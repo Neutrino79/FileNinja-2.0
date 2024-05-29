@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import home_view
+from src.apps.homepage.views import saveContact
 
 from django.conf import settings
 from django.contrib.staticfiles.urls import static
@@ -24,4 +25,5 @@ from django.contrib.staticfiles.urls import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("src.apps.homepage.urls")),
+    path('saveContact', saveContact, name = "saveContact"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
