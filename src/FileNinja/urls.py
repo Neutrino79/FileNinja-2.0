@@ -25,5 +25,7 @@ from django.contrib.staticfiles.urls import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("src.apps.homepage.urls")),
+    path('pdf_to_docx/', include('src.apps.file_converter.urls')),
     path('saveContact', saveContact, name = "saveContact"),
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

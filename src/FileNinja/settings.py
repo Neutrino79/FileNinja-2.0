@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     # Own apps
     'src.apps.homepage',
+    'src.apps.file_converter',
 ]
 
 MIDDLEWARE = [

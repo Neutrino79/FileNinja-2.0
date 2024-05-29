@@ -10,7 +10,7 @@
         <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
           <h1>Bettter digital experience with<br> File-Ninja 2.0</h1>
           <h2>A comprehensive file manipulation tool</h2>
-          <a href="#about" class="btn-get-started scrollto">Get Started</a>
+          <a href="#services" class="btn-get-started scrollto">Get Started</a>
         </div>
         <div class="col-lg-6 order-1 order-lg-2 hero-img">
           <img src="{% static 'assets/img/hero-img.svg' %}" class="img-fluid animated" alt="">
@@ -35,7 +35,7 @@
           <div class="col-md-6 col-lg-3 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
             <div class="icon-box">
               <div class="icon"><i class="bx bxl-dribbble"></i></div>
-              <h4 class="title"><a href="">PDF to DOCX</a></h4>
+              <h4 class="title"><a href="{% url 'file_converter:pdf_to_docx' %}">PDF to DOCX</a></h4>
               <p class="description">This function provides you a seamless conversion of your PDF to Word file </p>
             </div>
           </div>

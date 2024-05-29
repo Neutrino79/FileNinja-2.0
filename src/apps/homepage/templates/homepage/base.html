@@ -5,13 +5,13 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Ninestars Bootstrap Template - Index</title>
+  <title>File-Ninja</title>
   <meta content="" name="descriptison">
   <meta content="" name="keywords">
 
   <!-- Favicons -->
   <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
-  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+  <link href="{% static 'assets/img/favicon.png' %}" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
@@ -34,6 +34,8 @@
     <!--Importing main.js file for contact form validation-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="{% static 'assets/js/main.js' %}"></script>
+    
+    <link rel="stylesheet" href="{% static 'assets/custom/css/styles.css' %}">
 
   <!-- =======================================================
   * Template Name: Ninestars - v2.0.0
@@ -49,19 +51,27 @@
   <header id="header" class="fixed-top">
     <div class="container-fluid d-flex">
 
-      <div class="logo mr-auto">
-        <h1 class="text-light"><a href="{% url 'homepage:home' %}"><span><b>File-Ninja</b></span></a></h1>
+      <div class="logo mr-auto d-flex align-items-center">
+          <a href="{% url 'homepage:home' %}"><img style="margin-right: 15px" src="{% static  'assets/img/logo.png' %}" alt="" class="img-fluid"></a>
+        <h1 class="text-light" style="color:#4c403a"><a href="{% url 'homepage:home' %}"><span><b>File-Ninja</b></span></a></h1>
         <!-- Uncomment below if you prefer to use an image logo -->
-        <!-- <a href="index.html"><img src="{% static  'assets/img/logo.png' %}" alt="" class="img-fluid"></a>-->
+
       </div>
 
       <nav class="nav-menu d-none d-lg-block">
         <ul>
-          <li class="active"><a href="#header">Home</a></li>
-          <li><a href="#services">Services</a></li>
+
+            {% if request.path == '/' %}
+            <li class="active"><a href="#header">Home</a></li>
+            {% else %}
+            <li class="active"><a href="{% url 'homepage:home' %}#header">Home</a></li>
+            {% endif %}
+
+            <li><a href="{% url 'homepage:home' %}#services">Services</a></li>
+
           <li class="drop-down"><a href="">Services</a>
             <ul>
-              <li><a href="#">PDF to DOCX</a></li>
+              <li><a href="{% url 'file_converter:pdf_to_docx' %}">PDF to DOCX</a></li>
               <li><a href="#">PDF to XLSX</a></li>
               <li><a href="#">PDF to PPTX</a></li>
               <li><a href="#">JPG to PDF</a></li>
@@ -75,9 +85,8 @@
               </li>
             </ul>
           </li>
-          <li><a href="#contact">Contact Us</a></li>
-
-          <li class="get-started"><a href="#about">Get Started</a></li>
+          <li><a href="{% url 'homepage:home' %}#contact">Contact Us</a></li>
+          <li class="get-started"><a href="{% url 'homepage:home' %}#services">Get Started</a></li>
         </ul>
       </nav><!-- .nav-menu -->
 
@@ -128,9 +137,12 @@
           <div class="col-lg-3 col-md-6 footer-links" data-aos="fade-up" data-aos-delay="200">
             <h4>Useful Links</h4>
             <ul>
-              <li><i class="bx bx-chevron-right"></i> <a href="#">Home</a></li>
-              <li><i class="bx bx-chevron-right"></i> <a href="#">About us</a></li>
-              <li><i class="bx bx-chevron-right"></i> <a href="#">Services</a></li>
+                {% if request.path == '/' %}
+                    <li><i class="bx bx-chevron-right"></i> <a href="#">Home</a></li>
+                {% else %}
+                    <li><i class="bx bx-chevron-right"></i> <a href="{% url 'homepage:home' %}">Home</a></li>
+                {% endif %}
+              <li><i class="bx bx-chevron-right"></i> <a href="{% url 'homepage:home' %}#services">Services</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">Terms of service</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">Privacy policy</a></li>
             </ul>
@@ -139,7 +151,7 @@
           <div class="col-lg-3 col-md-6 footer-links" data-aos="fade-up" data-aos-delay="300">
             <h4>Our Services</h4>
             <ul>
-              <li><i class="bx bx-chevron-right"></i> <a href="#">PDF to DOCX</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="{% url 'file_converter:pdf_to_docx' %}">PDF to DOCX</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">PDF to PPTX</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">PDF to JPG</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">PDF splitter</a></li>
@@ -191,6 +203,9 @@
 
   <!-- Template Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
+
+  <!-- custom JS File -->
+  <script src="{% static 'assets/custom/js/customjs.js' %}"></script>
 
 </body>
 
