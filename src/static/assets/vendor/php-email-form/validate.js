@@ -95,6 +95,10 @@ jQuery(document).ready(function($) {
     var this_form = $(this);
     var action = $(this).attr('action');
 
+    if (!action) {
+      action = $(this).data('url'); // Use the URL from the data-url attribute if the action attribute is not set
+    }
+
     if( ! action ) {
       this_form.find('.loading').slideUp();
       this_form.find('.error-message').slideDown().html('The form action property is not set!');
@@ -110,13 +114,13 @@ jQuery(document).ready(function($) {
       url: action,
       data: str,
       success: function(msg) {
-        if (msg == 'OK') {
+        if (msg.success) {
           this_form.find('.loading').slideUp();
           this_form.find('.sent-message').slideDown();
           this_form.find("input:not(input[type=submit]), textarea").val('');
         } else {
           this_form.find('.loading').slideUp();
-          this_form.find('.error-message').slideDown().html(msg);
+          this_form.find('.error-message').slideDown().html(msg.error);
         }
       }
     });

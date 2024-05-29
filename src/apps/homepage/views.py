@@ -23,5 +23,4 @@ def saveContact(request):
         obj.save()
         saved = True
         sleep(0.75)
-    
-    return  JsonResponse({'success': saved})
+    return JsonResponse({'success': saved})
