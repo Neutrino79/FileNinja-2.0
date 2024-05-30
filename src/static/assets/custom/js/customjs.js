@@ -54,33 +54,38 @@ function handleFiles(files) {
         validFileTypes = ['application/pdf'];
     }
 
-    ([...files]).forEach(file => uploadFile(file, validFileTypes));
+    let uploadedFilesContainer = document.getElementById('uploaded-files').children[0];
+
+    ([...files]).forEach(file => {
+        if (validFileTypes.includes(file.type)) {
+            let fileDiv = document.createElement('div');
+            fileDiv.className = 'col';
+
+            if (file.type.startsWith('image/')) {
+                let img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.onload = function() {
+                    URL.revokeObjectURL(this.src);
+                }
+                fileDiv.appendChild(img);
+            } else if (file.type === 'application/pdf') {
+                let objElem = document.createElement('object');
+                objElem.data = URL.createObjectURL(file);
+                objElem.width = '50%';
+                objElem.height = '50%'; // Adjust this value as needed
+                fileDiv.appendChild(objElem);
+            } else {
+                fileDiv.textContent = file.name;
+            }
+
+            uploadedFilesContainer.appendChild(fileDiv);
+        } else {
+            alert(`Please upload a valid file. Accepted formats are: ${validFileTypes.join(', ')}`);
+        }
+    });
 }
 
-function uploadFile(file, validFileTypes) {
 
-    let mimeToExtension = {
-        'application/pdf': '.pdf',
-        'image/jpeg': '.jpg',
-        'image/png': '.png'
-        // Add more mappings if needed
-    };
 
-    if (!validFileTypes.includes(file.type)) {
-        let validExtensions = validFileTypes.map(type => mimeToExtension[type]).join(', ');
-        alert(`Please upload a valid file. Accepted formats are: ${validExtensions}`);
-        return;
-    }
 
-    let url = '/your-upload-url/';
-    let formData = new FormData();
 
-    formData.append('file', file);
-
-    fetch(url, {
-        method: 'POST',
-        body: formData
-    })
-    .then(() => { /* Done. Inform the user */ })
-    .catch(() => { /* Error. Inform the user */ });
-}

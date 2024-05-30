@@ -14,6 +14,7 @@
         text-align: center;
         background: #f9f9f9;
         position: relative;
+
     }
 
     .box.highlight {
@@ -30,3 +31,27 @@
         opacity: 0;
         cursor: pointer;
     }
+
+
+    /*uploaded files in th container*/
+
+#uploaded-files {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: calc(500px * 3); /* Adjust as needed */
+    overflow-y: auto; /* Enable scrolling */
+}
+
+#uploaded-files .col {
+    flex: 1 0 20%; /* Grow and shrink as needed, basis is 20% */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+#uploaded-files .col img, #uploaded-files .col object {
+    max-width: 100%;
+    height: auto;
+}
