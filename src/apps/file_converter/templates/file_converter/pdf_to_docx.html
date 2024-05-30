@@ -7,17 +7,16 @@
                 <h2>PDF to DOCX</h2>
                 <p>Convert your PDF files to DOCX format</p>
             </div>
-             <!-- Drag and drop area for files -->
+            <!-- Drag and drop area for files -->
             <div class="content-row">
                 <div class="box" id="drop-area">
-                  <div class="box-header">
-                      <h3 class="box-title">Drag and drop your PDF files here</h3>
-                  </div>
-                  <input type="file" id="fileElem" multiple accept=".pdf" onchange="handleFiles(this.files)">
-                  <label class="button" for="fileElem">Select some files</label>
-              </div>
+                    <div class="box-header">
+                        <h3 class="box-title">Drag and drop your PDF files here</h3>
+                    </div>
+                    <input type="file" id="fileElem" multiple accept=".pdf">
+                    <label class="button" for="fileElem">Select some files</label>
+                </div>
             </div>
-
             <!-- File list -->
             <div class="content-row">
                 <div class="box">
@@ -25,14 +24,16 @@
                         <h3 class="box-title">Files to convert</h3>
                     </div>
                     <div class="container" id="uploaded-files">
-                        <div class="row">
+                        <div class="file-row">
                             <!-- Uploaded files will be inserted here -->
                         </div>
                     </div>
                 </div>
             </div>
-
-
+            <!-- Convert button -->
+            <div class="content-row">
+                <button id="convert-button" class="button">Convert to DOCX</button>
+            </div>
         </div>
     </section>
 {% endblock %}

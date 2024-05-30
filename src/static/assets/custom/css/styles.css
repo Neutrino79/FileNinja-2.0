@@ -1,57 +1,129 @@
+/* File upload in pdf to docx */
+.content-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
 
-/* file upload in pdf to docx */
+}
 
-    .content-row {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+.file-row{
+    width: 1206px;
+}
 
-    .box {
-        border: 2px dashed #aaa;
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-        background: #f9f9f9;
-        position: relative;
+.box {
+    border: 2px dashed #aaa;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    background: #f9f9f9;
+    position: relative;
+    width: 100%;
+}
 
-    }
+.box.highlight {
+    border-color: #c8e6c9;
+    background: #e8f5e9;
+}
 
-    .box.highlight {
-        border-color: #c8e6c9;
-        background: #e8f5e9;
-    }
-
-    .box input[type="file"] {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        opacity: 0;
-        cursor: pointer;
-    }
-
-
-    /*uploaded files in th container*/
+.box input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
 
 #uploaded-files {
     display: flex;
-    flex-wrap: wrap;
-    max-height: calc(500px * 3); /* Adjust as needed */
-    overflow-y: auto; /* Enable scrolling */
+    flex-wrap: wrap; /* Add this line */
+    justify-content: space-around; /* Optional: Add this line if you want to distribute items evenly along the line */
 }
 
+/* Default styles for file preview containers */
 #uploaded-files .col {
-    flex: 1 0 20%; /* Grow and shrink as needed, basis is 20% */
+    flex: 1 0 calc(100% / 6 - 20px); /* Adjust width for maximum 6 images in a row */
+    max-width: calc(100% / 6 - 20px);
+    width: calc(20% - 20px); /* Set a specific width for each container with margin */
+
+    height: 280px; /* Set a specific height for each container */
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 10px;
     margin: 10px;
-    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
-#uploaded-files .col img, #uploaded-files .col object {
-    max-width: 100%;
-    height: auto;
+#uploaded-files .col object {
+    width: 100%; /* Ensure the object fills the container */
+    height: 100%; /* Ensure the object fills the container */
+    max-width: calc(100% - 20px); /* Adjust max-width to account for padding */
+    max-height: calc(100% - 20px); /* Adjust max-height to account for padding */
+    object-fit: contain;
+}
+
+#uploaded-files .col button {
+    display: block;
+    margin: 5px auto;
+    padding: 5px 10px;
+    background: #4285f4;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#uploaded-files .file-item {
+    flex: 1 0 calc(100% / 6 - 20px); /* Adjust width for maximum 6 images in a row */
+    max-width: calc(100% / 6 - 20px);
+    min-width: calc(100% / 6 - 20px); /* Set a minimum width */
+    /* Rest of the code... */
+}
+
+
+
+#uploaded-files .col button:hover {
+    background: #357ae8;
+}
+
+
+/* Media query for desktop screens */
+@media screen and (max-width: 1200px) {
+    #uploaded-files .col {
+        width: calc(16.6667% - 20px); /* Adjust width for maximum 6 images in a row */
+        max-width: calc(14.2857% - 20px); /* Ensure max width for smaller screens */
+    }
+}
+
+/* Media query for mobile screens */
+@media screen and (max-width: 767px) {
+    #uploaded-files .col {
+        width: calc(25% - 20px); /* Adjust width for maximum 4 images in a row */
+        max-width: calc(25% - 20px); /* Ensure max width for smaller screens */
+    }
+}
+
+
+
+
+.button {
+    background: #4285f4;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+    display: inline-block;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: #357ae8;
 }
