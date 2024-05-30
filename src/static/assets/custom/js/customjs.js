@@ -69,12 +69,12 @@ function handleFiles(files) {
 
             let rotateButton = document.createElement('button');
             rotateButton.textContent = 'Rotate';
-            rotateButton.className = 'button';
+            rotateButton.className = 'file-button';
             rotateButton.onclick = () => rotateFile(objElem, fileDiv);
 
             let deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
-            deleteButton.className = 'button';
+            deleteButton.className = 'file-button';
             deleteButton.onclick = () => deleteFile(fileDiv);
 
             buttonContainer.appendChild(rotateButton);
@@ -129,3 +129,42 @@ function drop(e) {
     const dropzone = e.target.closest('.file-item');
     dropzone.insertAdjacentElement('beforebegin', draggableElement);
 }
+
+/*document.addEventListener('DOMContentLoaded', function () {
+    const buttonDiv = document.querySelector('.button-div');
+    const footer = document.querySelector('footer');
+
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                buttonDiv.style.position = 'absolute';
+                buttonDiv.style.bottom = `${window.innerHeight - entry.boundingClientRect.top}px`;
+            } else {
+                buttonDiv.style.position = 'fixed';
+                buttonDiv.style.bottom = '0';
+            }
+        });
+    }, observerOptions);
+
+    observer.observe(footer);
+
+    // Initial check
+    const footerRect = footer.getBoundingClientRect();
+    if (footerRect.top < window.innerHeight) {
+        buttonDiv.style.position = 'absolute';
+        buttonDiv.style.bottom = `${window.innerHeight - footerRect.top}px`;
+    } else {
+        buttonDiv.style.position = 'fixed';
+        buttonDiv.style.bottom = '0';
+    }
+});*/
+
+
+
+
