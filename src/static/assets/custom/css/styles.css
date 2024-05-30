@@ -1,14 +1,15 @@
-/* File upload in pdf to docx */
 .content-row {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
-
 }
 
-.file-row{
-    width: 1206px;
+.file-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+    width: 100%;
 }
 
 .box {
@@ -38,92 +39,80 @@
 
 #uploaded-files {
     display: flex;
-    flex-wrap: wrap; /* Add this line */
-    justify-content: space-around; /* Optional: Add this line if you want to distribute items evenly along the line */
+    flex-wrap: wrap;
+    justify-content: flex-start;
 }
 
-/* Default styles for file preview containers */
-#uploaded-files .col {
-    flex: 1 0 calc(100% / 6 - 20px); /* Adjust width for maximum 6 images in a row */
+.file-item {
+    flex: 1 0 calc(100% / 6 - 20px);
     max-width: calc(100% / 6 - 20px);
-    width: calc(20% - 20px); /* Set a specific width for each container with margin */
-
-    height: 280px; /* Set a specific height for each container */
+    min-width: calc(100% / 6 - 20px);
+    height: 350px; /* Adjusted height */
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 10px;
     margin: 10px;
     box-sizing: border-box;
-    position: relative;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    overflow: hidden;
 }
 
-#uploaded-files .col object {
-    width: 100%; /* Ensure the object fills the container */
-    height: 100%; /* Ensure the object fills the container */
-    max-width: calc(100% - 20px); /* Adjust max-width to account for padding */
-    max-height: calc(100% - 20px); /* Adjust max-height to account for padding */
+.file-name {
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap; /* Ensure text is on one line */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis */
+    border-bottom: 1px solid #ddd; /* Separation line */
+    padding-bottom: 5px; /* Padding for separation line */
+}
+
+.file-preview {
+    width: 100%;
+    height: calc(100% - 80px); /* Adjusted height for buttons and filename */
     object-fit: contain;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd; /* Separation line */
+    padding-bottom: 5px; /* Padding for separation line */
 }
 
-#uploaded-files .col button {
-    display: block;
-    margin: 5px auto;
-    padding: 5px 10px;
-    background: #4285f4;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.button-container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 5px; /* Reduced margin */
 }
-
-#uploaded-files .file-item {
-    flex: 1 0 calc(100% / 6 - 20px); /* Adjust width for maximum 6 images in a row */
-    max-width: calc(100% / 6 - 20px);
-    min-width: calc(100% / 6 - 20px); /* Set a minimum width */
-    /* Rest of the code... */
-}
-
-
-
-#uploaded-files .col button:hover {
-    background: #357ae8;
-}
-
-
-/* Media query for desktop screens */
-@media screen and (max-width: 1200px) {
-    #uploaded-files .col {
-        width: calc(16.6667% - 20px); /* Adjust width for maximum 6 images in a row */
-        max-width: calc(14.2857% - 20px); /* Ensure max width for smaller screens */
-    }
-}
-
-/* Media query for mobile screens */
-@media screen and (max-width: 767px) {
-    #uploaded-files .col {
-        width: calc(25% - 20px); /* Adjust width for maximum 4 images in a row */
-        max-width: calc(25% - 20px); /* Ensure max width for smaller screens */
-    }
-}
-
-
-
 
 .button {
     background: #4285f4;
     color: #fff;
-    padding: 10px 20px;
-    text-align: center;
-    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid #357ae8; /* Added border */
     border-radius: 4px;
     cursor: pointer;
 }
 
 .button:hover {
     background: #357ae8;
+}
+
+/* Media query for desktop screens */
+@media screen and (max-width: 1200px) {
+    .file-item {
+        width: calc(16.6667% - 20px);
+        max-width: calc(14.2857% - 20px);
+    }
+}
+
+/* Media query for mobile screens */
+@media screen and (max-width: 767px) {
+    .file-item {
+        width: calc(25% - 20px);
+        max-width: calc(25% - 20px);
+    }
 }

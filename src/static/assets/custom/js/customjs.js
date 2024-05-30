@@ -1,4 +1,3 @@
-/* File upload in pdf to docx */
 let dropArea = document.getElementById('drop-area');
 let fileElem = document.getElementById('fileElem');
 let uploadedFilesContainer = document.getElementById('uploaded-files').children[0];
@@ -34,7 +33,6 @@ function unhighlight(e) {
 dropArea.addEventListener('drop', handleDrop, false);
 
 function handleDrop(e) {
-    console.log('Drop event triggered');
     let dt = e.dataTransfer;
     let files = dt.files;
     handleFiles(files);
@@ -44,41 +42,47 @@ function handleDrop(e) {
 fileElem.addEventListener('change', handleFileInput);
 
 function handleFileInput(e) {
-    console.log('Change event triggered by', e.target);
     handleFiles(e.target.files);
 }
 
 function handleFiles(files) {
-    console.log('Handling files');
-    console.trace('Trace: handleFiles');
     let validFileTypes = ['application/pdf'];
 
     // Process each file and create file preview elements
     ([...files]).forEach((file, index) => {
-        console.log(`Handling file ${index}`);
         if (validFileTypes.includes(file.type)) {
             let fileDiv = document.createElement('div');
             fileDiv.className = 'col file-item';
-            fileDiv.id = `file-item-${index}-${Date.now()}`; // Ensure unique id by appending timestamp
+            fileDiv.id = `file-item-${index}-${Date.now()}`;
             fileDiv.draggable = true;
+
+            let fileNameDiv = document.createElement('div');
+            fileNameDiv.className = 'file-name';
+            fileNameDiv.textContent = file.name;
 
             let objElem = document.createElement('object');
             objElem.data = URL.createObjectURL(file);
-            objElem.width = '80%'; // Adjust this value as needed
-            objElem.height = '80%'; // Adjust this value as needed
-            objElem.style.objectFit = 'contain';
+            objElem.className = 'file-preview';
+
+            let buttonContainer = document.createElement('div');
+            buttonContainer.className = 'button-container';
 
             let rotateButton = document.createElement('button');
             rotateButton.textContent = 'Rotate';
+            rotateButton.className = 'button';
             rotateButton.onclick = () => rotateFile(objElem, fileDiv);
 
             let deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
+            deleteButton.className = 'button';
             deleteButton.onclick = () => deleteFile(fileDiv);
 
+            buttonContainer.appendChild(rotateButton);
+            buttonContainer.appendChild(deleteButton);
+
+            fileDiv.appendChild(fileNameDiv);
             fileDiv.appendChild(objElem);
-            fileDiv.appendChild(rotateButton);
-            fileDiv.appendChild(deleteButton);
+            fileDiv.appendChild(buttonContainer);
 
             uploadedFilesContainer.appendChild(fileDiv);
             enableDragAndDrop(fileDiv);
@@ -93,13 +97,9 @@ function rotateFile(objElem, fileDiv) {
     let newRotation = (currentRotation ? parseInt(currentRotation[1]) : 0) + 90;
     objElem.style.transform = `rotate(${newRotation}deg)`;
 
-    if (newRotation % 180 !== 0) {
-        fileDiv.style.height = 'auto';
-        fileDiv.style.width = '200px';
-    } else {
-        fileDiv.style.height = '200px';
-        fileDiv.style.width = '100%';
-    }
+    // Adjust size based on rotation
+    objElem.style.width = newRotation % 180 !== 0 ? 'calc(100% * 1.414)' : '100%';
+    objElem.style.height = newRotation % 180 !== 0 ? 'calc(100% * 1.414)' : '100%';
 }
 
 function deleteFile(fileDiv) {
