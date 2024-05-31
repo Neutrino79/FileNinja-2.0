@@ -43,12 +43,32 @@
     justify-content: flex-start;
 }
 
+
+
+/* Hide Google Drive "Open" button overlay */
+.embed-container iframe {
+    pointer-events: none; /* This disables interactions with the iframe overlay */
+}
+
+.embed-container iframe::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+
+
 .file-item {
     flex: 1 0 calc(100% / 6 - 20px);
     max-width: calc(100% / 6 - 20px);
     min-width: calc(100% / 6 - 20px);
     height: 300px;
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     border-radius: 4px;
     padding: 10px;
     margin: 10px;
@@ -58,6 +78,7 @@
     align-items: center;
     text-align: center;
     overflow: hidden;
+    position: relative;
 }
 
 .file-name {
@@ -74,42 +95,44 @@
 
 .file-preview {
     width: 100%;
-    height: calc(100% - 0px);
+    height: auto;
+    max-height: calc(100% - 90px); /* Adjust to accommodate filename and buttons */
     object-fit: contain;
     margin-bottom: 5px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
     margin-top: 5px;
 }
+
 
 .button-container {
     display: flex;
     justify-content: space-around;
     width: 100%;
     margin-top: 5px;
-
 }
 
-.file-button{
+
+.file-button {
     background: #eb5d1e;
     color: #fff;
     padding: 5px 10px;
-    border: 1px solid ;
+    border: 1px solid;
     border-radius: 10px;
     cursor: pointer;
     margin-top: 5px;
 }
 
 
+
 .button {
     background: #eb5d1e;
     color: #fff;
     padding: 5px 10px;
-    border: 1px solid ;
+    border: 1px solid;
     border-radius: 10px;
     cursor: pointer;
     margin-top: 20px;
 }
+
 
 .button:hover {
     background: #c54811;
@@ -140,12 +163,44 @@
 }
 
 
+/* Highlight drop area */
+#drop-area.highlight {
+    border: 2px dashed #4CAF50;
+}
+
+/* Style for each file item */
+.file-item {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    position: relative;
+}
+
+.dragging {
+    opacity: 0.5;
+    transform: scale(1.05);
+    z-index: 1000;
+    position: absolute;
+}
+
+.placeholder {
+    border: 2px dashed #4CAF50;
+    background-color: #f0f0f0;
+    min-height: 100px;
+    transition: height 0.3s ease-in-out, margin 0.3s ease-in-out;
+    visibility: visible;
+}
+
+
+
+
+
+
 
 /* Default styling for larger screens (desktop) */
 .file-item {
     flex: 1 0 calc(100% / 6 - 20px);
     max-width: calc(100% / 6 - 20px);
 }
+
 
 /* Styling for large tablets and small desktops */
 @media screen and (max-width: 1200px) {
