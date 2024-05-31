@@ -79,7 +79,6 @@ function handleFiles(files) {
                 buttonContainer.appendChild(rotateButton);
             }
 
-
             buttonContainer.appendChild(deleteButton);
 
             fileDiv.appendChild(fileNameDiv);
@@ -89,36 +88,91 @@ function handleFiles(files) {
             uploadedFilesContainer.appendChild(fileDiv);
             enableDragAndDrop(fileDiv);
 
-            renderPDF(file, canvas);
+            const fileReader = new FileReader();
+
+            fileReader.onload = function() {
+                const typedarray = new Uint8Array(this.result);
+
+                pdfjsLib.getDocument(typedarray).promise.then(
+                    pdf => renderPDF(pdf, canvas),
+                    error => {
+                        if (error.name === 'PasswordException') {
+                            askForPassword(file, fileDiv, canvas);
+                        } else {
+                            alert(`Error loading PDF: ${error.message}`);
+                        }
+                    }
+                );
+            };
+
+            fileReader.readAsArrayBuffer(file);
         } else {
             alert(`Please upload a valid file. Accepted formats are: ${validFileTypes.join(', ')}`);
         }
     });
 }
 
-function renderPDF(file, canvas) {
+function askForPassword(file, fileDiv, canvas) {
+    let passwordContainer = document.createElement('div');
+    passwordContainer.className = 'password-container';
+
+    let passwordInput = document.createElement('input');
+    passwordInput.type = 'password';
+    passwordInput.className = 'password-input';
+    passwordInput.placeholder = 'Enter password';
+
+    let passwordError = document.createElement('div');
+    passwordError.className = 'password-error';
+
+    let submitPasswordButton = document.createElement('button');
+    submitPasswordButton.className = 'submit-password-button';
+    submitPasswordButton.textContent = 'Submit Password';
+    submitPasswordButton.onclick = () => openPDFWithPassword(file, passwordInput.value, passwordContainer, canvas, passwordError);
+
+    passwordContainer.appendChild(passwordInput);
+    passwordContainer.appendChild(passwordError);
+    passwordContainer.appendChild(submitPasswordButton);
+
+    fileDiv.appendChild(passwordContainer);
+}
+
+function openPDFWithPassword(file, password, passwordContainer, canvas, passwordError) {
     const fileReader = new FileReader();
 
     fileReader.onload = function() {
         const typedarray = new Uint8Array(this.result);
 
-        pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-            pdf.getPage(1).then(function(page) {
-                const viewport = page.getViewport({scale: 1.0});
-                const context = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                const renderContext = {
-                    canvasContext: context,
-                    viewport: viewport
-                };
-                page.render(renderContext);
-            });
-        });
+        pdfjsLib.getDocument({ data: typedarray, password }).promise.then(
+            pdf => {
+                renderPDF(pdf, canvas);
+                passwordContainer.remove();
+            },
+            error => {
+                if (error.name === 'PasswordException') {
+                    passwordError.textContent = 'Incorrect password. Please try again.';
+                } else {
+                    passwordError.textContent = `Error opening PDF: ${error.message}`;
+                }
+            }
+        );
     };
 
     fileReader.readAsArrayBuffer(file);
+}
+
+function renderPDF(pdf, canvas) {
+    pdf.getPage(1).then(function(page) {
+        const viewport = page.getViewport({ scale: 1.0 });
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+        };
+        page.render(renderContext);
+    });
 }
 
 function rotateFile(canvas) {
@@ -136,7 +190,6 @@ function rotateFile(canvas) {
     canvas.style.height = `calc(100% * ${scaleFactor})`;
     canvas.style.maxHeight = 'calc(100% - 90px)';
 }
-
 
 function deleteFile(fileDiv) {
     fileDiv.remove();

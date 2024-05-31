@@ -136,6 +136,10 @@
     border: 2px dashed #4CAF50;
 }
 
+
+
+
+
 /* Style for each file item */
 .file-item {
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
@@ -194,3 +198,42 @@
         max-width: calc(100% - 20px);
     }
 }
+
+
+
+
+/* Add styles for password input and error messages */
+.password-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.password-input {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 80%;
+}
+
+.password-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.submit-password-button {
+    background: #eb5d1e;
+    color: #fff;
+    padding: 5px 10px;
+    border: 1px solid;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.submit-password-button:hover {
+    background: #c54811;
+}
+
