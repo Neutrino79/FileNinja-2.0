@@ -65,17 +65,21 @@ function handleFiles(files) {
             let buttonContainer = document.createElement('div');
             buttonContainer.className = 'button-container';
 
-            let rotateButton = document.createElement('button');
-            rotateButton.textContent = 'Rotate';
-            rotateButton.className = 'file-button';
-            rotateButton.onclick = () => rotateFile(canvas);
-
             let deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
             deleteButton.className = 'file-button';
             deleteButton.onclick = () => deleteFile(fileDiv);
 
-            buttonContainer.appendChild(rotateButton);
+            if(window.location.href.endsWith('pdf_to_docx/'))
+            {
+                let rotateButton = document.createElement('button');
+                rotateButton.textContent = 'Rotate';
+                rotateButton.className = 'file-button';
+                rotateButton.onclick = () => rotateFile(canvas);
+                buttonContainer.appendChild(rotateButton);
+            }
+
+
             buttonContainer.appendChild(deleteButton);
 
             fileDiv.appendChild(fileNameDiv);
@@ -120,14 +124,19 @@ function renderPDF(file, canvas) {
 function rotateFile(canvas) {
     let currentRotation = canvas.style.transform.match(/rotate\((\d+)deg\)/);
     let newRotation = (currentRotation ? parseInt(currentRotation[1]) : 0) + 90;
+    canvas.dataset.rotation = newRotation;
     canvas.style.transform = `rotate(${newRotation}deg)`;
 
-    // Adjust size based on rotation
+    // Determine if the canvas is rotated
     let isRotated = newRotation % 180 !== 0;
-    canvas.style.width = isRotated ? 'calc(100% * 1.414)' : '100%';
-    canvas.style.height = isRotated ? 'calc(100% * 1.414)' : '100%';
+
+    // Adjust size based on rotation
+    let scaleFactor = isRotated ? Math.sqrt(2) : 1; // Scale factor for diagonal length
+    canvas.style.width = `calc(100% * ${scaleFactor})`;
+    canvas.style.height = `calc(100% * ${scaleFactor})`;
     canvas.style.maxHeight = 'calc(100% - 90px)';
 }
+
 
 function deleteFile(fileDiv) {
     fileDiv.remove();

@@ -43,26 +43,6 @@
     justify-content: flex-start;
 }
 
-
-
-/* Hide Google Drive "Open" button overlay */
-.embed-container iframe {
-    pointer-events: none; /* This disables interactions with the iframe overlay */
-}
-
-.embed-container iframe::after {
-    content: "";
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
-
-
-
 .file-item {
     flex: 1 0 calc(100% / 6 - 20px);
     max-width: calc(100% / 6 - 20px);
@@ -79,6 +59,7 @@
     text-align: center;
     overflow: hidden;
     position: relative;
+
 }
 
 .file-name {
@@ -100,16 +81,18 @@
     object-fit: contain;
     margin-bottom: 5px;
     margin-top: 5px;
+    z-index: 1; /* Ensure the canvas is below the buttons */
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out, height 0.3s ease-in-out;
 }
-
 
 .button-container {
     display: flex;
     justify-content: space-around;
     width: 100%;
     margin-top: 5px;
+    z-index: 2; /* Ensure the buttons are above the canvas */
+    position: relative;
 }
-
 
 .file-button {
     background: #eb5d1e;
@@ -121,8 +104,6 @@
     margin-top: 5px;
 }
 
-
-
 .button {
     background: #eb5d1e;
     color: #fff;
@@ -133,35 +114,22 @@
     margin-top: 20px;
 }
 
-
 .button:hover {
     background: #c54811;
 }
-.hr{
+
+.hr {
     height: 5px; /* Adjust the pixel value for desired thickness */
-  border: none;
+    border: none;
 }
 
 .button-div {
     text-align: center;
-    /*
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 10px;
-    background: #fff;
-
-    border-top: 1px solid #ddd;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-
-    */
 }
 
 .button-div .button {
     padding: 10px 20px;
 }
-
 
 /* Highlight drop area */
 #drop-area.highlight {
@@ -189,18 +157,11 @@
     visibility: visible;
 }
 
-
-
-
-
-
-
 /* Default styling for larger screens (desktop) */
 .file-item {
     flex: 1 0 calc(100% / 6 - 20px);
     max-width: calc(100% / 6 - 20px);
 }
-
 
 /* Styling for large tablets and small desktops */
 @media screen and (max-width: 1200px) {
@@ -233,6 +194,3 @@
         max-width: calc(100% - 20px);
     }
 }
-
-
-
