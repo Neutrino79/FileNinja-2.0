@@ -139,12 +139,45 @@
     padding: 10px 20px;
 }
 
-/* Media query for larger screens */
-@media screen and (max-width: 767px) {
+
+
+/* Default styling for larger screens (desktop) */
+.file-item {
+    flex: 1 0 calc(100% / 6 - 20px);
+    max-width: calc(100% / 6 - 20px);
+}
+
+/* Styling for large tablets and small desktops */
+@media screen and (max-width: 1200px) {
     .file-item {
-        flex-basis: calc(50% - 20px); /* Display two files per row with margin */
-        max-width: calc(50% - 20px); /* Maximum width of file item */
+        flex: 1 0 calc(100% / 4 - 20px);
+        max-width: calc(100% / 4 - 20px);
     }
 }
+
+/* Styling for tablets */
+@media screen and (max-width: 992px) {
+    .file-item {
+        flex: 1 0 calc(100% / 3 - 20px);
+        max-width: calc(100% / 3 - 20px);
+    }
+}
+
+/* Styling for large phones */
+@media screen and (max-width: 768px) {
+    .file-item {
+        flex: 1 0 calc(100% / 2 - 20px);
+        max-width: calc(100% / 2 - 20px);
+    }
+}
+
+/* Styling for small phones */
+@media screen and (max-width: 576px) {
+    .file-item {
+        flex: 1 0 calc(100% - 20px);
+        max-width: calc(100% - 20px);
+    }
+}
+
 
 
