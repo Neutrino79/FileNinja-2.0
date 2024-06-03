@@ -113,6 +113,7 @@ function handleFiles(files) {
 }
 
 function askForPassword(file, fileDiv, canvas) {
+
     let passwordContainer = document.createElement('div');
     passwordContainer.className = 'password-container';
 
@@ -133,7 +134,9 @@ function askForPassword(file, fileDiv, canvas) {
     passwordContainer.appendChild(passwordError);
     passwordContainer.appendChild(submitPasswordButton);
 
-    fileDiv.appendChild(passwordContainer);
+    // Insert the password container before the button container
+    let buttonContainer = fileDiv.querySelector('.button-container');
+    fileDiv.insertBefore(passwordContainer, buttonContainer);
 }
 
 function openPDFWithPassword(file, password, passwordContainer, canvas, passwordError) {

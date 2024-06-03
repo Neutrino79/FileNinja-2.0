@@ -40,7 +40,7 @@
 #uploaded-files {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: space-evenly;
 }
 
 .file-item {
@@ -72,6 +72,7 @@
     text-overflow: ellipsis;
     border-bottom: 1px solid #ddd;
     padding-bottom: 8px;
+    z-index: 2;
 }
 
 .file-preview {
@@ -91,7 +92,10 @@
     width: 100%;
     margin-top: 5px;
     z-index: 2; /* Ensure the buttons are above the canvas */
-    position: relative;
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
 }
 
 .file-button {
@@ -135,8 +139,6 @@
 #drop-area.highlight {
     border: 2px dashed #4CAF50;
 }
-
-
 
 
 
@@ -208,14 +210,18 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+    position: absolute;
+    margin-top: 30%;
+    z-index: 5;
 }
 
 .password-input {
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 10px;
     width: 80%;
+    height: 20%;
 }
 
 .password-error {
@@ -231,6 +237,8 @@
     border: 1px solid;
     border-radius: 10px;
     cursor: pointer;
+    height: 30%;
+    font-size: small;
 }
 
 .submit-password-button:hover {
