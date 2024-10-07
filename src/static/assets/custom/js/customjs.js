@@ -273,3 +273,117 @@ function getNextSibling(el) {
     }
     return nextSibling;
 }
+
+
+
+
+
+
+//sending the request to backend of pdf -to -docx
+document.getElementById('convert-button').addEventListener('click', sendFilesToBackend);
+
+function sendFilesToBackend() {
+    const files = document.querySelectorAll('.file-item');
+    if (files.length === 0) {
+        alert("Please add files to convert.");
+        return;
+    }
+
+    let allPasswordsEntered = true;
+    let fileData = [];
+
+    files.forEach(fileItem => {
+        const fileId = fileItem.id;
+        const canvas = fileItem.querySelector('canvas');
+        const rotation = canvas.dataset.rotation || 0;
+        const passwordInput = fileItem.querySelector('.password-input');
+        const password = passwordInput ? passwordInput.value : null;
+
+        if (passwordInput && !password) {
+            allPasswordsEntered = false;
+        }
+
+        const fileInfo = {
+            fileId: fileId,
+            rotation: rotation,
+            password: password
+        };
+
+        fileData.push(fileInfo);
+    });
+
+    if (!allPasswordsEntered) {
+        alert("Enter password for password encrypted files");
+        return;
+    }
+
+    // Start loading animation
+    document.getElementById('convert-button').style.display = 'none';
+    const downloadButtonContainer = document.getElementById('download-button-container');
+    const downloadButton = document.getElementById('download-button');
+    const loader = downloadButtonContainer.querySelector('.loader');
+
+    downloadButtonContainer.style.display = 'inline-block';
+    downloadButton.disabled = true;
+    loader.style.display = 'inline-block';
+
+    // Collect form data
+    const formData = new FormData();
+    fileData.forEach(fileInfo => {
+        const fileItem = document.getElementById(fileInfo.fileId);
+        const file = fileElem.files[Array.from(fileElem.files).findIndex(f => f.name === fileItem.querySelector('.file-name').textContent)];
+        formData.append('files', file);
+        formData.append('rotations', fileInfo.rotation);
+        formData.append('passwords', fileInfo.password);
+    });
+
+    fetch('/pdf_to_docx/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        setTimeout(() => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'converted_files.zip'; // Example file name
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            // Enable download button and stop loading animation
+            loader.style.display = 'none';
+            downloadButton.disabled = false;
+        }, 2000); // 2-second delay
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+
+        // Revert to convert button
+        downloadButtonContainer.style.display = 'none';
+        document.getElementById('convert-button').style.display = 'inline-block';
+    });
+}
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
