@@ -1,131 +1,170 @@
-let dropArea = document.getElementById('drop-area');
-let fileElem = document.getElementById('fileElem');
-let uploadedFilesContainer = document.getElementById('uploaded-files').children[0];
+// Constants and DOM element references
+const DROP_AREA = document.getElementById('drop-area');
+const FILE_INPUT = document.getElementById('fileElem');
+const UPLOADED_FILES_CONTAINER = document.getElementById('uploaded-files').children[0];
+const CONVERT_BUTTON = document.getElementById('convert-button');
+const DOWNLOAD_BUTTON_CONTAINER = document.getElementById('download-button-container');
+const DOWNLOAD_BUTTON = document.getElementById('download-button');
+const LOADER = DOWNLOAD_BUTTON_CONTAINER.querySelector('.loader');
+const VALID_FILE_TYPES = ['application/pdf'];
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
-// Prevent default behavior for drag and drop events
+// Event listeners
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, preventDefaults, false);
+    DROP_AREA.addEventListener(eventName, preventDefaults, false);
 });
 
+['dragenter', 'dragover'].forEach(eventName => {
+    DROP_AREA.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    DROP_AREA.addEventListener(eventName, unhighlight, false);
+});
+
+DROP_AREA.addEventListener('drop', handleDrop, false);
+FILE_INPUT.addEventListener('change', handleFileInput);
+CONVERT_BUTTON.addEventListener('click', sendFilesToBackend);
+
+// Utility functions
 function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
 }
 
-// Highlight and unhighlight drop area on drag events
-['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, highlight, false);
-});
-
-['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, unhighlight, false);
-});
-
-function highlight(e) {
-    dropArea.classList.add('highlight');
+function highlight() {
+    DROP_AREA.classList.add('highlight');
 }
 
-function unhighlight(e) {
-    dropArea.classList.remove('highlight');
+function unhighlight() {
+    DROP_AREA.classList.remove('highlight');
 }
-
-// Handle file drop
-dropArea.addEventListener('drop', handleDrop, false);
 
 function handleDrop(e) {
-    let dt = e.dataTransfer;
-    let files = dt.files;
+    const files = e.dataTransfer.files;
     handleFiles(files);
 }
-
-// Handle file selection
-fileElem.addEventListener('change', handleFileInput);
 
 function handleFileInput(e) {
     handleFiles(e.target.files);
 }
 
 function handleFiles(files) {
-    let validFileTypes = ['application/pdf'];
-
-    ([...files]).forEach((file, index) => {
-        if (validFileTypes.includes(file.type)) {
-            let fileDiv = document.createElement('div');
-            fileDiv.className = 'col file-item';
-            fileDiv.id = `file-item-${index}-${Date.now()}`;
-            fileDiv.draggable = true;
-
-            let fileNameDiv = document.createElement('div');
-            fileNameDiv.className = 'file-name';
-            fileNameDiv.textContent = file.name;
-
-            let canvas = document.createElement('canvas');
-            canvas.className = 'file-preview';
-
-            let buttonContainer = document.createElement('div');
-            buttonContainer.className = 'button-container';
-
-            let deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'file-button';
-            deleteButton.onclick = () => deleteFile(fileDiv);
-
-            if(window.location.href.endsWith('pdf_to_docx/'))
-            {
-                let rotateButton = document.createElement('button');
-                rotateButton.textContent = 'Rotate';
-                rotateButton.className = 'file-button';
-                rotateButton.onclick = () => rotateFile(canvas);
-                buttonContainer.appendChild(rotateButton);
-            }
-
-            buttonContainer.appendChild(deleteButton);
-
-            fileDiv.appendChild(fileNameDiv);
-            fileDiv.appendChild(canvas);
-            fileDiv.appendChild(buttonContainer);
-
-            uploadedFilesContainer.appendChild(fileDiv);
-            enableDragAndDrop(fileDiv);
-
-            const fileReader = new FileReader();
-
-            fileReader.onload = function() {
-                const typedarray = new Uint8Array(this.result);
-
-                pdfjsLib.getDocument(typedarray).promise.then(
-                    pdf => renderPDF(pdf, canvas),
-                    error => {
-                        if (error.name === 'PasswordException') {
-                            askForPassword(file, fileDiv, canvas);
-                        } else {
-                            alert(`Error loading PDF: ${error.message}`);
-                        }
-                    }
-                );
-            };
-
-            fileReader.readAsArrayBuffer(file);
-        } else {
-            alert(`Please upload a valid file. Accepted formats are: ${validFileTypes.join(', ')}`);
+    [...files].forEach((file, index) => {
+        if (validateFile(file)) {
+            processFile(file, index);
         }
     });
 }
 
-function askForPassword(file, fileDiv, canvas) {
+function validateFile(file) {
+    if (!VALID_FILE_TYPES.includes(file.type)) {
+        showError(`Invalid file type: ${file.name}. Please upload PDF files only.`);
+        return false;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+        showError(`File too large: ${file.name}. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
+        return false;
+    }
+    return true;
+}
 
-    let passwordContainer = document.createElement('div');
+function processFile(file, index) {
+    const fileDiv = createFileElement(file, index);
+    UPLOADED_FILES_CONTAINER.appendChild(fileDiv);
+    enableDragAndDrop(fileDiv);
+    renderPDFPreview(file, fileDiv);
+}
+
+function createFileElement(file, index) {
+    const fileDiv = document.createElement('div');
+    fileDiv.className = 'col file-item';
+    fileDiv.id = `file-item-${index}-${Date.now()}`;
+    fileDiv.draggable = true;
+
+    const fileNameDiv = document.createElement('div');
+    fileNameDiv.className = 'file-name';
+    fileNameDiv.textContent = file.name;
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'file-preview';
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'button-container';
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'file-button';
+    deleteButton.onclick = () => deleteFile(fileDiv);
+
+    if (window.location.href.endsWith('pdf_to_docx/')) {
+        const rotateButton = document.createElement('button');
+        rotateButton.textContent = 'Rotate';
+        rotateButton.className = 'file-button';
+        rotateButton.onclick = () => rotateFile(canvas);
+        buttonContainer.appendChild(rotateButton);
+    }
+
+    buttonContainer.appendChild(deleteButton);
+
+    fileDiv.appendChild(fileNameDiv);
+    fileDiv.appendChild(canvas);
+    fileDiv.appendChild(buttonContainer);
+
+    return fileDiv;
+}
+
+function renderPDFPreview(file, fileDiv) {
+    const canvas = fileDiv.querySelector('canvas');
+    const fileReader = new FileReader();
+
+    fileReader.onload = function() {
+        const typedarray = new Uint8Array(this.result);
+
+        pdfjsLib.getDocument(typedarray).promise.then(
+            pdf => renderPDF(pdf, canvas),
+            error => {
+                if (error.name === 'PasswordException') {
+                    askForPassword(file, fileDiv, canvas);
+                } else {
+                    showError(`Error loading PDF: ${error.message}`);
+                }
+            }
+        );
+    };
+
+    fileReader.readAsArrayBuffer(file);
+}
+
+function renderPDF(pdf, canvas) {
+    pdf.getPage(1).then(function(page) {
+        const scale = 1.5;
+        const viewport = page.getViewport({ scale });
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+        };
+        page.render(renderContext);
+    });
+}
+
+function askForPassword(file, fileDiv, canvas) {
+    const passwordContainer = document.createElement('div');
     passwordContainer.className = 'password-container';
 
-    let passwordInput = document.createElement('input');
+    const passwordInput = document.createElement('input');
     passwordInput.type = 'password';
     passwordInput.className = 'password-input';
     passwordInput.placeholder = 'Enter password';
 
-    let passwordError = document.createElement('div');
+    const passwordError = document.createElement('div');
     passwordError.className = 'password-error';
 
-    let submitPasswordButton = document.createElement('button');
+    const submitPasswordButton = document.createElement('button');
     submitPasswordButton.className = 'submit-password-button';
     submitPasswordButton.textContent = 'Submit Password';
     submitPasswordButton.onclick = () => openPDFWithPassword(file, passwordInput.value, passwordContainer, canvas, passwordError);
@@ -134,8 +173,7 @@ function askForPassword(file, fileDiv, canvas) {
     passwordContainer.appendChild(passwordError);
     passwordContainer.appendChild(submitPasswordButton);
 
-    // Insert the password container before the button container
-    let buttonContainer = fileDiv.querySelector('.button-container');
+    const buttonContainer = fileDiv.querySelector('.button-container');
     fileDiv.insertBefore(passwordContainer, buttonContainer);
 }
 
@@ -163,32 +201,14 @@ function openPDFWithPassword(file, password, passwordContainer, canvas, password
     fileReader.readAsArrayBuffer(file);
 }
 
-function renderPDF(pdf, canvas) {
-    pdf.getPage(1).then(function(page) {
-        const viewport = page.getViewport({ scale: 1.0 });
-        const context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        const renderContext = {
-            canvasContext: context,
-            viewport: viewport
-        };
-        page.render(renderContext);
-    });
-}
-
 function rotateFile(canvas) {
-    let currentRotation = canvas.style.transform.match(/rotate\((\d+)deg\)/);
-    let newRotation = (currentRotation ? parseInt(currentRotation[1]) : 0) + 90;
+    let currentRotation = parseInt(canvas.dataset.rotation || '0');
+    let newRotation = (currentRotation + 90) % 360;
     canvas.dataset.rotation = newRotation;
     canvas.style.transform = `rotate(${newRotation}deg)`;
 
-    // Determine if the canvas is rotated
-    let isRotated = newRotation % 180 !== 0;
-
-    // Adjust size based on rotation
-    let scaleFactor = isRotated ? Math.sqrt(2) : 1; // Scale factor for diagonal length
+    const isRotated = newRotation % 180 !== 0;
+    const scaleFactor = isRotated ? Math.sqrt(2) : 1;
     canvas.style.width = `calc(100% * ${scaleFactor})`;
     canvas.style.height = `calc(100% * ${scaleFactor})`;
     canvas.style.maxHeight = 'calc(100% - 90px)';
@@ -198,6 +218,7 @@ function deleteFile(fileDiv) {
     fileDiv.remove();
 }
 
+// Drag and drop functionality for reordering files
 function enableDragAndDrop(fileDiv) {
     fileDiv.addEventListener('dragstart', dragStart);
     fileDiv.addEventListener('dragover', dragOver);
@@ -207,7 +228,7 @@ function enableDragAndDrop(fileDiv) {
 let draggedElement;
 
 function dragStart(e) {
-    draggedElement = e.target;
+    draggedElement = e.target.closest('.file-item');
     e.dataTransfer.setData('text/plain', draggedElement.id);
     e.dropEffect = 'move';
 }
@@ -215,77 +236,51 @@ function dragStart(e) {
 function dragOver(e) {
     e.preventDefault();
     const dropzone = e.target.closest('.file-item');
-    const fileItems = document.querySelectorAll('.file-item');
-    const draggedIndex = Array.from(fileItems).indexOf(draggedElement);
-    const dropIndex = Array.from(fileItems).indexOf(dropzone);
-    const rect = dropzone.getBoundingClientRect();
-    const nextSibling = getNextSibling(dropzone);
-
     if (dropzone && dropzone !== draggedElement) {
+        const rect = dropzone.getBoundingClientRect();
+        const nextSibling = dropzone.nextElementSibling;
+        const dropIndex = Array.from(UPLOADED_FILES_CONTAINER.children).indexOf(dropzone);
+        const draggedIndex = Array.from(UPLOADED_FILES_CONTAINER.children).indexOf(draggedElement);
+
         if (e.clientY > rect.top + rect.height / 2) {
             if (draggedIndex < dropIndex) {
-                dropzone.parentNode.insertBefore(draggedElement, nextSibling);
+                UPLOADED_FILES_CONTAINER.insertBefore(draggedElement, nextSibling);
             } else {
-                dropzone.parentNode.insertBefore(draggedElement, dropzone);
+                UPLOADED_FILES_CONTAINER.insertBefore(draggedElement, dropzone);
             }
         } else {
-            dropzone.parentNode.insertBefore(draggedElement, dropzone);
+            UPLOADED_FILES_CONTAINER.insertBefore(draggedElement, dropzone);
         }
-        applyFadeEffect(fileItems, dropzone);
+        applyFadeEffect(dropzone);
     }
 }
 
-function applyFadeEffect(fileItems, dropzone) {
+function applyFadeEffect(dropzone) {
+    const fileItems = UPLOADED_FILES_CONTAINER.querySelectorAll('.file-item');
     fileItems.forEach(item => {
-        if (item !== draggedElement) {
-            item.style.opacity = '0.5';
-        }
+        item.style.opacity = item === draggedElement ? '1' : '0.5';
     });
     dropzone.style.opacity = '1';
 }
 
 function drop(e) {
     e.preventDefault();
-    const id = e.dataTransfer.getData('text/plain');
-    const draggableElement = document.getElementById(id);
-    const dropzone = e.target.closest('.file-item');
-    const nextSibling = getNextSibling(dropzone);
-    if (e.clientY > dropzone.getBoundingClientRect().top + dropzone.getBoundingClientRect().height / 2) {
-        dropzone.parentNode.insertBefore(draggableElement, nextSibling);
-    } else {
-        dropzone.parentNode.insertBefore(draggableElement, dropzone);
-    }
     resetOpacity();
     draggedElement = null;
 }
 
 function resetOpacity() {
-    const fileItems = document.querySelectorAll('.file-item');
+    const fileItems = UPLOADED_FILES_CONTAINER.querySelectorAll('.file-item');
     fileItems.forEach(item => {
         item.style.opacity = '1';
     });
 }
 
-function getNextSibling(el) {
-    let nextSibling = el.nextElementSibling;
-    while (nextSibling && nextSibling.nodeType !== 1) {
-        nextSibling = nextSibling.nextElementSibling;
-    }
-    return nextSibling;
-}
-
-
-
-
-
-
-//sending the request to backend of pdf -to -docx
-document.getElementById('convert-button').addEventListener('click', sendFilesToBackend);
-
+// Backend communication
 function sendFilesToBackend() {
     const files = document.querySelectorAll('.file-item');
     if (files.length === 0) {
-        alert("Please add files to convert.");
+        showError("Please add files to convert.");
         return;
     }
 
@@ -303,35 +298,20 @@ function sendFilesToBackend() {
             allPasswordsEntered = false;
         }
 
-        const fileInfo = {
-            fileId: fileId,
-            rotation: rotation,
-            password: password
-        };
-
-        fileData.push(fileInfo);
+        fileData.push({ fileId, rotation, password });
     });
 
     if (!allPasswordsEntered) {
-        alert("Enter password for password encrypted files");
+        showError("Enter password for password encrypted files");
         return;
     }
 
-    // Start loading animation
-    document.getElementById('convert-button').style.display = 'none';
-    const downloadButtonContainer = document.getElementById('download-button-container');
-    const downloadButton = document.getElementById('download-button');
-    const loader = downloadButtonContainer.querySelector('.loader');
+    startLoading();
 
-    downloadButtonContainer.style.display = 'inline-block';
-    downloadButton.disabled = true;
-    loader.style.display = 'inline-block';
-
-    // Collect form data
     const formData = new FormData();
     fileData.forEach(fileInfo => {
         const fileItem = document.getElementById(fileInfo.fileId);
-        const file = fileElem.files[Array.from(fileElem.files).findIndex(f => f.name === fileItem.querySelector('.file-name').textContent)];
+        const file = FILE_INPUT.files[Array.from(FILE_INPUT.files).findIndex(f => f.name === fileItem.querySelector('.file-name').textContent)];
         formData.append('files', file);
         formData.append('rotations', fileInfo.rotation);
         formData.append('passwords', fileInfo.password);
@@ -344,46 +324,55 @@ function sendFilesToBackend() {
             'X-CSRFToken': getCookie('csrftoken')
         }
     })
-    .then(response => response.blob())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+    })
     .then(blob => {
         setTimeout(() => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = 'converted_files.zip'; // Example file name
+            a.download = 'converted_files.zip';
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
-
-            // Enable download button and stop loading animation
-            loader.style.display = 'none';
-            downloadButton.disabled = false;
-        }, 2000); // 2-second delay
+            stopLoading();
+        }, 2000);
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-
-        // Revert to convert button
-        downloadButtonContainer.style.display = 'none';
-        document.getElementById('convert-button').style.display = 'inline-block';
+        showError('An error occurred during conversion. Please try again.');
+        stopLoading();
     });
 }
 
-// Helper function to get CSRF token
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
+function startLoading() {
+    CONVERT_BUTTON.style.display = 'none';
+    DOWNLOAD_BUTTON_CONTAINER.style.display = 'inline-block';
+    DOWNLOAD_BUTTON.disabled = true;
+    LOADER.style.display = 'inline-block';
 }
 
+function stopLoading() {
+    LOADER.style.display = 'none';
+    DOWNLOAD_BUTTON.disabled = false;
+}
+
+function showError(message) {
+    alert(message);
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+    // Additional initialization if needed
+});
